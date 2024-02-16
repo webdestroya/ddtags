@@ -64,7 +64,8 @@ type fullTagStruct struct {
 	Float32P *float32 `ddtag:"float32p"`
 	Float64P *float64 `ddtag:"float64p"`
 
-	Float64Prec float64 `ddtag:"float64prec,precision=4,bitsize=32"`
+	Float64Fmt float64 `ddtag:"float64fmt,fmt=%.9f"`
+	IntFmt     int     `ddtag:"intfmt,fmt=0x%08x"`
 }
 
 func TestExtract(t *testing.T) {
@@ -132,6 +133,53 @@ func TestExtract(t *testing.T) {
 	})
 }
 
+func TestExtractFull(t *testing.T) {
+	tags := ddtags.Extract(buildFull())
+	expected := []string{
+		"str:strval",
+		"strp:strp",
+
+		"bool:true",
+		"boolp:false",
+
+		"int:1",
+		"int8:1",
+		"int16:1",
+		"int32:1",
+		"int64:1",
+
+		"intp:0",
+		"int8p:0",
+		"int16p:0",
+		"int32p:0",
+		"int64p:0",
+
+		"uint:1",
+		"uint8:1",
+		"uint16:1",
+		"uint32:1",
+		"uint64:1",
+
+		"uintp:0",
+		"uint8p:0",
+		"uint16p:0",
+		"uint32p:0",
+		"uint64p:0",
+
+		"float32:1.30000",
+		"float64:1.30000",
+
+		"float32p:1.30000",
+		"float64p:1.30000",
+
+		"float64fmt:0.333333333",
+		"intfmt:0x000004d2",
+	}
+
+	require.ElementsMatch(t, tags, expected)
+
+}
+
 func BenchmarkExtract(b *testing.B) {
 
 	tags := &fullTagStruct{
@@ -140,7 +188,7 @@ func BenchmarkExtract(b *testing.B) {
 		Bool:  true,
 		BoolP: ptr(false),
 
-		Float64Prec: (float64(1) / float64(3)),
+		Float64Fmt: (float64(1) / float64(3)),
 	}
 
 	b.ResetTimer()
@@ -163,6 +211,51 @@ func BenchmarkExtractSimple(b *testing.B) {
 	}
 }
 
+func BenchmarkExtractFull(b *testing.B) {
+
+	tags := buildFull()
+
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		ddtags.Extract(tags)
+	}
+}
+
 func ptr[T any](v T) *T {
 	return &v
+}
+
+func buildFull() *fullTagStruct {
+	return &fullTagStruct{
+		Str:        "strval",
+		Bool:       true,
+		StrP:       ptr("strp"),
+		BoolP:      ptr(false),
+		Int:        int(1),
+		Int8:       int8(1),
+		Int16:      int16(1),
+		Int32:      int32(1),
+		Int64:      int64(1),
+		IntP:       ptr(int(0)),
+		Int8P:      ptr(int8(0)),
+		Int16P:     ptr(int16(0)),
+		Int32P:     ptr(int32(0)),
+		Int64P:     ptr(int64(0)),
+		Uint:       uint(1),
+		Uint8:      uint8(1),
+		Uint16:     uint16(1),
+		Uint32:     uint32(1),
+		Uint64:     uint64(1),
+		UintP:      ptr(uint(0)),
+		Uint8P:     ptr(uint8(0)),
+		Uint16P:    ptr(uint16(0)),
+		Uint32P:    ptr(uint32(0)),
+		Uint64P:    ptr(uint64(0)),
+		Float32:    float32(1.3),
+		Float64:    float64(1.3),
+		Float32P:   ptr(float32(1.3)),
+		Float64P:   ptr(float64(1.3)),
+		Float64Fmt: (float64(1) / float64(3)),
+		IntFmt:     1234,
+	}
 }

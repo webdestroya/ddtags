@@ -1,6 +1,7 @@
 package ddtags
 
 import (
+	"fmt"
 	"reflect"
 	"strconv"
 	"strings"
@@ -9,8 +10,7 @@ import (
 const (
 	tagKey = "ddtag"
 
-	tagPrecision = "precision"
-	tagBitSize   = "bitsize"
+	tagFmt = "fmt"
 )
 
 // Extracts a list of datadog tags using the "ddtag" struct member tags
@@ -57,9 +57,6 @@ func Extract(struc any) []string {
 		}
 
 		if field.Kind() == reflect.Pointer {
-			if field.IsNil() {
-				continue
-			}
 			field = field.Elem()
 		}
 
@@ -73,26 +70,26 @@ func Extract(struc any) []string {
 			tagValue = strconv.FormatBool(f)
 
 		case int:
-			tagValue = strconv.FormatInt(int64(f), 10)
+			tagValue = fmtInteger(f, tagExtras)
 		case int8:
-			tagValue = strconv.FormatInt(int64(f), 10)
+			tagValue = fmtInteger(f, tagExtras)
 		case int16:
-			tagValue = strconv.FormatInt(int64(f), 10)
+			tagValue = fmtInteger(f, tagExtras)
 		case int32:
-			tagValue = strconv.FormatInt(int64(f), 10)
+			tagValue = fmtInteger(f, tagExtras)
 		case int64:
-			tagValue = strconv.FormatInt(f, 10)
+			tagValue = fmtInteger(f, tagExtras)
 
 		case uint:
-			tagValue = strconv.FormatUint(uint64(f), 10)
+			tagValue = fmtInteger(f, tagExtras)
 		case uint8:
-			tagValue = strconv.FormatUint(uint64(f), 10)
+			tagValue = fmtInteger(f, tagExtras)
 		case uint16:
-			tagValue = strconv.FormatUint(uint64(f), 10)
+			tagValue = fmtInteger(f, tagExtras)
 		case uint32:
-			tagValue = strconv.FormatUint(uint64(f), 10)
+			tagValue = fmtInteger(f, tagExtras)
 		case uint64:
-			tagValue = strconv.FormatUint(f, 10)
+			tagValue = fmtInteger(f, tagExtras)
 
 		case float32:
 			tagValue = fmtFloat(f, tagExtras)
@@ -113,40 +110,37 @@ func Extract(struc any) []string {
 }
 
 func fmtFloat[T float32 | float64](value T, tagExtras string) string {
-
-	precision := defaultConfig.FloatPrecision
-	bitSize := defaultConfig.FloatBitSize
-
+	strFmt := defaultConfig.FloatFormat
 	if tagExtras != "" {
 		for _, extra := range strings.Split(tagExtras, ",") {
 			nameValue := strings.SplitN(extra, "=", 2)
 			if len(nameValue) == 2 {
 				name, val := nameValue[0], nameValue[1]
 				switch name {
-				case tagPrecision:
-					if nv, err := strconv.ParseInt(val, 10, 64); err == nil {
-						precision = int(nv)
-					}
-				case tagBitSize:
-					if nv, err := strconv.ParseInt(val, 10, 64); err == nil {
-						bitSize = int(nv)
-					}
+				case tagFmt:
+					strFmt = val
 				}
 			}
 		}
 	}
 
-	// if v, ok := sTag.Lookup(tagPrecision); ok {
-	// 	if nv, err := strconv.ParseInt(v, 10, 64); err == nil {
-	// 		precision = int(nv)
-	// 	}
-	// }
+	return fmt.Sprintf(strFmt, float64(value))
+}
 
-	// if v, ok := sTag.Lookup(tagBitSize); ok {
-	// 	if nv, err := strconv.ParseInt(v, 10, 64); err == nil {
-	// 		bitSize = int(nv)
-	// 	}
-	// }
+func fmtInteger[T int | int8 | int16 | int32 | int64 | uint | uint8 | uint16 | uint32 | uint64](value T, tagExtras string) string {
+	strFmt := defaultConfig.IntegerFormat
+	if tagExtras != "" {
+		for _, extra := range strings.Split(tagExtras, ",") {
+			nameValue := strings.SplitN(extra, "=", 2)
+			if len(nameValue) == 2 {
+				name, val := nameValue[0], nameValue[1]
+				switch name {
+				case tagFmt:
+					strFmt = val
+				}
+			}
+		}
+	}
 
-	return strconv.FormatFloat(float64(value), 'f', precision, bitSize)
+	return fmt.Sprintf(strFmt, value)
 }
