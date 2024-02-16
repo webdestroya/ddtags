@@ -1,4 +1,9 @@
-# Go DataDog Tagging Struct
+# Go DataDog Tagging Helper
+
+[![godoc](https://img.shields.io/badge/godoc-reference-blue.svg?style=flat)](https://godoc.org/github.com/webdestroya/ddtags)
+[![License](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/webdestroya/ddtags/blob/main/LICENSE)
+[![Go Report Card](https://goreportcard.com/badge/github.com/webdestroya/ddtags)](https://goreportcard.com/report/github.com/webdestroya/ddtags)
+
 
 Building up a slice of tags every time you want to do a Datadog metric is tedious. 
 

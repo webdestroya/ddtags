@@ -7,24 +7,34 @@ type Config struct {
 	// it's probably ddlambda.MetricWithTimestamp
 	MetricWithTimestamp func(string, float64, time.Time, ...string)
 
-	// Precision for FormatFloat
-	// Default: -1
-	FloatPrecision int
+	// The string format passed to fmt.Sprintf for integer values
+	// Default: '%d'
+	IntegerFormat string
 
-	// BitSize for FormatFloat
-	// Default: 64
-	FloatBitSize int
+	// The string format passed to fmt.Sprintf for float values
+	// Default: '%0.5f'
+	FloatFormat string
 }
 
 var defaultConfig *Config
 
 func Configure(cfg *Config) {
-	defaultConfig = cfg
+	if cfg.MetricWithTimestamp != nil {
+		defaultConfig.MetricWithTimestamp = cfg.MetricWithTimestamp
+	}
+
+	if cfg.IntegerFormat != "" {
+		defaultConfig.IntegerFormat = cfg.IntegerFormat
+	}
+
+	if cfg.FloatFormat != "" {
+		defaultConfig.FloatFormat = cfg.FloatFormat
+	}
 }
 
 func init() {
 	defaultConfig = &Config{
-		FloatPrecision: -1,
-		FloatBitSize:   64,
+		FloatFormat:   "%.5f",
+		IntegerFormat: "%d",
 	}
 }

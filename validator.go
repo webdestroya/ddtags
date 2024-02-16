@@ -33,12 +33,12 @@ func Validate(struc any) error {
 		case float32:
 		case float64:
 
-		// case *string:
-		// case *bool:
-		// case *float32:
-		// case *float64:
-		// case *int, *int8, *int16, *int32, *int64:
-		// case *uint, *uint8, *uint16, *uint32, *uint64:
+		case *string:
+		case *bool:
+		case *float32:
+		case *float64:
+		case *int, *int8, *int16, *int32, *int64:
+		case *uint, *uint8, *uint16, *uint32, *uint64:
 		default:
 			return fmt.Errorf("invalid field type: %s (%T)", sType.Field(i).Name, f)
 		}
