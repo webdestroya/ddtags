@@ -81,7 +81,7 @@ func Extract(struc any) []string {
 		case int32:
 			tagValue = strconv.FormatInt(int64(f), 10)
 		case int64:
-			tagValue = strconv.FormatInt(int64(f), 10)
+			tagValue = strconv.FormatInt(f, 10)
 
 		case uint:
 			tagValue = strconv.FormatUint(uint64(f), 10)
@@ -92,7 +92,7 @@ func Extract(struc any) []string {
 		case uint32:
 			tagValue = strconv.FormatUint(uint64(f), 10)
 		case uint64:
-			tagValue = strconv.FormatUint(uint64(f), 10)
+			tagValue = strconv.FormatUint(f, 10)
 
 		case float32:
 			tagValue = fmtFloat(f, tagExtras)
