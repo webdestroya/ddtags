@@ -19,7 +19,17 @@ type Config struct {
 var defaultConfig *Config
 
 func Configure(cfg *Config) {
-	defaultConfig = cfg
+	if cfg.MetricWithTimestamp != nil {
+		defaultConfig.MetricWithTimestamp = cfg.MetricWithTimestamp
+	}
+
+	if cfg.IntegerFormat != "" {
+		defaultConfig.IntegerFormat = cfg.IntegerFormat
+	}
+
+	if cfg.FloatFormat != "" {
+		defaultConfig.FloatFormat = cfg.FloatFormat
+	}
 }
 
 func init() {
